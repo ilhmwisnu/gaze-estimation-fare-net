@@ -40,7 +40,7 @@ def load_subject_data(subject_dir):
                 face_imgs.append(face_img)
                 labels.append(label)
                 
-    return np.array(l_eye_imgs),np.array(r_eye_imgs),np.array(face_imgs),np.array(labels) 
+    return np.array(l_eye_imgs),np.array(r_eye_imgs),np.array(face_imgs),np.array(labels, dtype=float) 
 
 # Function to load the entire dataset
 def load_dataset(original_dataset=True):
