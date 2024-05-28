@@ -27,8 +27,6 @@ def load_subject_data(subject_dir):
                 image_name = ann[0]  
                 label = ann[1:]
                 
-                # print(label)
-                
                 l_eye_img = cv.imread(f"{day_path}/left_eye/{image_name}",cv.IMREAD_GRAYSCALE) / 255.0
                 
                 r_eye_img = cv.imread(f"{day_path}/right_eye/{image_name}",cv.IMREAD_GRAYSCALE) / 255.0
@@ -55,8 +53,6 @@ def load_dataset(original_dataset=True):
         subject_path = os.path.join(path, f"p{i:02d}")
         if os.path.isdir(subject_path):
             l_eye_imgs, r_eye_imgs, face_imgs, labels = load_subject_data(subject_path)
-            
-            print(labels.shape)
             
             l_eye_list.extend(l_eye_imgs)
             r_eye_list.extend(r_eye_imgs)
