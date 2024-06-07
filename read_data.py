@@ -11,6 +11,7 @@ def load_subject_data(subject_dir):
     labels = []
     
     days = [day_dir for day_dir in os.listdir(subject_dir) if day_dir.startswith("day")]
+    count = 0
     
     for day in days:
         day_path = os.path.join(subject_dir, day)
@@ -24,6 +25,12 @@ def load_subject_data(subject_dir):
                 
             # Load images and annotations
             for ann in annotations:
+                
+                if count == 1000:
+                    break
+
+                count +=1
+
                 image_name = ann[0]  
                 label = ann[1:]
                 
@@ -37,20 +44,27 @@ def load_subject_data(subject_dir):
                 r_eye_imgs.append(r_eye_img)
                 face_imgs.append(face_img)
                 labels.append(label)
+
+
                 
     return np.array(l_eye_imgs),np.array(r_eye_imgs),np.array(face_imgs),np.array(labels, dtype=float) 
 
 # Function to load the entire dataset
-def load_dataset(original_dataset=True):
-    path = "data_subset/original" if original_dataset else "data_subset/enhanced"
+def load_dataset(dataset_type="original"):
+    path = f"data_subset/{dataset_type}" 
+
     
+
     l_eye_list = []
     r_eye_list = []
     face_list = []
     label_list = []
     
-    for i in range(14,15):
+    for i in range(15):
         subject_path = os.path.join(path, f"p{i:02d}")
+
+        print(f"Reading => {subject_path}")
+
         if os.path.isdir(subject_path):
             l_eye_imgs, r_eye_imgs, face_imgs, labels = load_subject_data(subject_path)
             
