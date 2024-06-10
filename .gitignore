@@ -7,3 +7,6 @@ log
 logg
 Face Landmarks Predictor.dat
 log.zip
+data_subset.zip
+training_result
+__pycache__
