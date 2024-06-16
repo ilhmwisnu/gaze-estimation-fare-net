@@ -3,8 +3,7 @@ subset_list
 data_subset
 sandbox.ipynb
 models
-log
-logg
+log*
 Face Landmarks Predictor.dat
 log.zip
 data_subset.zip
