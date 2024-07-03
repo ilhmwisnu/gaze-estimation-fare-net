@@ -139,7 +139,10 @@ class FARE_Net:
             a = a + 1
             check, frame = video.read()
             key = cv.waitKey(1)
-            if a == 60 :
+            
+            cv.imshow('camera', frame)
+            
+            if a == 180 :
                 break   
 
         video.release()
