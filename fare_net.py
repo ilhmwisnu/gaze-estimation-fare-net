@@ -4,6 +4,8 @@ import numpy as np
 import cv2 as cv
 import matplotlib.pyplot as plt
 import dlib
+import time
+from enlighten_inference import EnlightenOnnxModel
 
 class FARE_Net:
     
@@ -142,7 +144,7 @@ class FARE_Net:
             
             cv.imshow('camera', frame)
             
-            if a == 180 :
+            if a == 90 :
                 break   
 
         video.release()
@@ -157,6 +159,8 @@ class FARE_Net:
         
         
     def visualize_gaze(self, path=None, label=None, camera_index=0) :
+        
+        model = EnlightenOnnxModel(providers = ["CPUExecutionProvider"])
         
         if path == None :
             raw_face_img = self.__get_image_from_camera(camera_index=camera_index)
@@ -174,12 +178,19 @@ class FARE_Net:
         l_center_y = (y3 + y4) // 2
 
         r_eye_img = self.__crop_and_resize_eye(raw_face_img,[x1, y1, x2, y2])
-        r_eye_img = cv.cvtColor(r_eye_img, cv.COLOR_BGR2GRAY)
 
         l_eye_img = self.__crop_and_resize_eye(raw_face_img,[x3, y3, x4, y4])
-        l_eye_img = cv.cvtColor(l_eye_img, cv.COLOR_BGR2GRAY)
         
         face_img = self.__get_face_image(raw_face_img,raw_img_landmarks)
+        
+        enhance_start_time = time.time()
+        r_eye_img = model.predict(r_eye_img)
+        l_eye_img = model.predict(l_eye_img)
+        face_img = model.predict(face_img)
+        enhance_end_time = time.time()
+        
+        r_eye_img = cv.cvtColor(r_eye_img, cv.COLOR_BGR2GRAY)
+        l_eye_img = cv.cvtColor(l_eye_img, cv.COLOR_BGR2GRAY)
         face_img = cv.cvtColor(face_img, cv.COLOR_BGR2RGB)
         
         plt.subplot(1,3,1)
@@ -194,7 +205,13 @@ class FARE_Net:
         l_eye_img = l_eye_img / 255.0
         face_img = face_img / 255.0
         
+        
+        predict_start_time = time.time()
         gaze, choosed = self.predict([np.array([l_eye_img]), np.array([r_eye_img]), np.array([face_img])])
+        predict_end_time = time.time()
+        
+        elapsed_time = (predict_end_time-predict_start_time)+(enhance_end_time-enhance_start_time)
+        print(f"Inference Time => {elapsed_time:.6f} seconds")
 
         if choosed[0] == "Left" :
             center_x =  l_center_x
@@ -226,7 +243,7 @@ class FARE_Net:
 
         plt.figure(figsize=(8,6))
         plt.imshow(rgb_img)
-        plt.plot([end_x,center_x], [end_y,center_y], 'g-',label="Predicted Gaze",  linewidth=2) 
+        plt.plot([end_x,center_x], [end_y,center_y], 'g-', label="Predicted Gaze", linewidth=2) 
         
         if label != None :
             plt.plot([label_end_x,center_x], [label_end_y,center_y], 'b-', label="Label Gaze", linewidth=2) 
